@@ -1,3 +1,100 @@
+provider "heroku" {
+  version = "~> 2.2"
+}
+
+data "heroku_app" "int" {
+  name = "origami-polyfill-service-int"
+}
+
+resource "heroku_app" "int" {
+  name   = "origami-polyfill-service-int"
+  region = "eu"
+
+  organization {
+    name = "ft-origami"
+  }
+}
+
+data "heroku_app" "staging-eu" {
+  name = "origami-polyfill-service-qa-eu"
+}
+
+data "heroku_app" "staging-us" {
+  name = "origami-polyfill-service-qa-us"
+}
+
+resource "heroku_app" "staging-eu" {
+  name   = "origami-polyfill-service-qa-eu"
+  region = "eu"
+
+  organization {
+    name = "ft-origami"
+  }
+}
+
+resource "heroku_app" "staging-us" {
+  name   = "origami-polyfill-service-qa-us"
+  region = "us"
+
+  organization {
+    name = "ft-origami"
+  }
+}
+
+data "heroku_app" "production-eu" {
+  name = "origami-polyfill-service-eu"
+}
+
+data "heroku_app" "production-us" {
+  name = "origami-polyfill-service-us"
+}
+
+resource "heroku_app" "production-eu" {
+  name   = "origami-polyfill-service-eu"
+  region = "eu"
+
+  organization {
+    name = "ft-origami"
+  }
+}
+
+resource "heroku_app" "production-us" {
+  name   = "origami-polyfill-service-us"
+  region = "us"
+
+  organization {
+    name = "ft-origami"
+  }
+}
+
+resource "heroku_pipeline" "origami-polyfill-service" {
+  name = "origami-polyfill-service"
+}
+
+resource "heroku_pipeline_coupling" "staging-eu" {
+  app      = "${heroku_app.staging-eu.name}"
+  pipeline = "${heroku_pipeline.test-app.id}"
+  stage    = "staging"
+}
+
+resource "heroku_pipeline_coupling" "stagingp-us" {
+  app      = "${heroku_app.stagingp-us.name}"
+  pipeline = "${heroku_pipeline.test-app.id}"
+  stage    = "staging"
+}
+
+resource "heroku_pipeline_coupling" "production-eu" {
+  app      = "${heroku_app.production-eu.name}"
+  pipeline = "${heroku_pipeline.origami-polyfill-service.id}"
+  stage    = "production"
+}
+
+resource "heroku_pipeline_coupling" "production-us" {
+  app      = "${heroku_app.production-us.name}"
+  pipeline = "${heroku_pipeline.origami-polyfill-service.id}"
+  stage    = "production"
+}
+
 provider "fastly" {
   version = "0.11.1"
 }
